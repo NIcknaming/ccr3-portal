@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ccr3.de</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+<style>
+  :root { --bg:#f4f5f7; --card:#fff; --text:#1b1f27; --muted:#667085; --border:#e3e6eb; --accent:#4f7cff; --bad:#e5484d; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1218; --card:#181c25; --text:#e8ebf2; --muted:#8b93a7; --border:#272c38; --accent:#7c9cff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:20px;
+    background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.5; }
+  .box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px 24px; max-width:480px; width:100%; }
+  h1 { font-size:1.5rem; margin:0 0 8px; }
+  p { margin:0 0 14px; color:var(--muted); }
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; color:var(--bad); }
+  .btn { display:inline-block; padding:9px 16px; border-radius:10px; border:1px solid var(--accent); color:var(--accent);
+    text-decoration:none; font-weight:600; cursor:pointer; background:transparent; font-size:.95rem; margin-right:8px; }
+  .btn:hover { background:var(--accent); color:#fff; }
+  details.info { margin-top:18px; border-top:1px solid var(--border); padding-top:14px; }
+  details.info summary { cursor:pointer; font-weight:600; font-size:.92rem; color:var(--text); }
+  details.info summary:hover { color:var(--accent); }
+  details.info p, details.info li { color:var(--muted); font-size:.88rem; }
+  details.info ul { margin:0 0 14px; padding-left:20px; }
+  details.info li { margin-bottom:6px; }
+  details.info strong { color:var(--text); }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>ccr3.de</h1>
+  <p id="checking">Prüfe Verbindung zum Tailnet …<br>
+  <span style="font-size:.88rem">Fragt dein Browser nach Zugriff auf das lokale Netzwerk, wähle bitte <strong style="color:var(--text)">Erlauben</strong>.</span></p>
+
+  <div id="offline" hidden>
+    <p><strong style="color:var(--text)">Noch nicht im Tailnet?</strong><br>
+    Die Dienste hinter ccr3.de sind nur über Tailscale erreichbar. Bist du verbunden und siehst trotzdem diese Meldung, hat dein Browser den Zugriff auf das lokale Netzwerk vermutlich blockiert (siehe Hinweis unten). Erlaube ihn und prüfe erneut.</p>
+    <p>Du brauchst Zugang? Schreib mir kurz eine Mail, dann richte ich dich ein.</p>
+    <p><a class="btn" id="mailBtn" href="#">Mail senden</a><button class="btn" id="retry">Erneut prüfen</button></p>
+    <p><code>Fehler: TAILNET_NOT_REACHABLE</code></p>
+  </div>
+
+  <details class="info" id="info">
+    <summary>Warum fragt mein Browser nach Zugriff auf das lokale Netzwerk?</summary>
+    <p style="margin-top:12px"><strong>Kurz:</strong> Diese Seite ist öffentlich, die Dienste liegen aber in einem privaten Netz. Moderne Browser fragen deshalb, bevor eine öffentliche Seite etwas im privaten Netz anspricht.</p>
+    <ul>
+      <li><strong>Was geprüft wird:</strong> Die Seite versucht, <code style="color:var(--accent)">home.ccr3.de</code> zu erreichen. Der Name führt auf eine Adresse im privaten Tailscale-Netz (Bereich 100.64.0.0/10). Nur wer im Tailnet ist, bekommt eine Antwort.</li>
+      <li><strong>Warum die Abfrage kommt:</strong> Der Browser schützt dein Heimnetz davor, dass beliebige Webseiten darin herumtasten. Diese Schutzfunktion heißt je nach Browser „Local Network Access“. Sie ist normal und kein Fehler.</li>
+      <li><strong>Was die Seite damit macht:</strong> Sie fragt nur, ob eine Verbindung zustande kommt. Es werden keine Daten aus deinem Netz gelesen, gesendet oder gespeichert.</li>
+      <li><strong>Was du tun musst:</strong> Wähle <strong>Erlauben</strong>. Mit dem Haken bei „Entscheidung für diese Website merken“ fragt der Browser auf diesem Gerät nicht mehr.</li>
+      <li><strong>Falls du „Blockieren“ gewählt hast:</strong> Öffne die Website-Einstellungen über das Symbol links in der Adressleiste, erlaube den Zugriff auf das lokale Netzwerk und klicke auf „Erneut prüfen“. Die genauen Menünamen unterscheiden sich je nach Browser.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+/* ============ HIER ANPASSEN ============ */
+const portalUrl   = "https://home.ccr3.de";   // Portal auf server1
+const contactMail = "support.ccr3.de@gmail.com";
+/* ======================================= */
+
+document.getElementById("mailBtn").href =
+  "mailto:" + contactMail + "?subject=" + encodeURIComponent("Zugang zum Tailnet von ccr3.de");
+
+async function check() {
+  document.getElementById("offline").hidden = true;
+  document.getElementById("checking").hidden = false;
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 4000);
+  try {
+    await fetch(portalUrl, { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+    location.replace(portalUrl);
+  } catch (e) {
+    document.getElementById("checking").hidden = true;
+    document.getElementById("offline").hidden = false;
+    document.getElementById("info").open = true;
+  } finally {
+    clearTimeout(t);
+  }
+}
+document.getElementById("retry").addEventListener("click", check);
+check();
+</script>
+</body>
+</html>
