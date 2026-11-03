@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ccr3.de</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+<style>
+:root{color-scheme:dark light;--bg:#080b14;--t:#f2f4fc;--m:#b4bdd6;--g:rgba(16,21,38,.72);--l:rgba(255,255,255,.18);--a:#8fadff;--a2:#c3a0ff;--ok:#3ddc97;--bad:#ff7b8a;--p:rgba(13,17,30,.97);--o:.38}
+@media(prefers-color-scheme:light){:root{--bg:#eef1f9;--t:#12162a;--m:#46506b;--g:rgba(255,255,255,.88);--l:rgba(20,30,70,.22);--a:#2f4ed8;--a2:#7138d8;--ok:#0b7a50;--bad:#c4283c;--p:rgba(255,255,255,.98);--o:.25}}
+*{box-sizing:border-box}
+body{margin:0;color:var(--t);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;min-height:100vh}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:var(--o);animation:float 22s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:520px;height:520px;background:var(--a);top:-140px;left:-120px}
+.bg i:nth-child(2){width:460px;height:460px;background:var(--a2);right:-140px;top:28%;animation-delay:-8s}
+.bg i:nth-child(3){width:380px;height:380px;background:#2ad4c0;bottom:-140px;left:32%;animation-delay:-14s}
+@keyframes float{to{transform:translate(70px,45px) scale(1.18)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(8px)}}
+.rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:var(--d,0s)}
+.grad{background:linear-gradient(90deg,var(--a),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.glow{position:relative;overflow:hidden}
+.glow::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .25s;background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%),rgba(124,156,255,.2),transparent 60%)}
+.glow:hover::before{opacity:1}
+.sb{color:var(--m);font-size:.9rem}
+.tt{font-weight:700;font-size:1.12rem}
+.grow{flex:1;min-width:0}
+.ic{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;font-size:1.6rem;flex-shrink:0;background:linear-gradient(135deg,rgba(124,156,255,.28),rgba(183,132,255,.28));border:1px solid var(--l)}
+.btn{padding:11px 20px;border-radius:12px;border:1px solid var(--m);background:var(--g);color:var(--t);font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s,border-color .15s}
+.btn:hover{transform:translateY(-2px);border-color:var(--a)}
+.btn.primary{border:0;color:#fff;background:linear-gradient(90deg,#3350e6,#7138d8)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--m);opacity:.5;flex-shrink:0}
+.dot.ok{background:var(--ok);opacity:1;box-shadow:0 0 10px var(--ok)}.dot.bad{background:var(--bad);opacity:1}
+.err{color:var(--bad);font-size:.88rem;min-height:1.3em;margin:0}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.75rem;color:var(--m);margin:18px 0 0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.ai{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:99px;border:1px solid var(--m);background:var(--g);color:var(--t);font-size:.82rem;font-weight:600;backdrop-filter:blur(10px)}
+main{min-height:100vh;display:grid;place-items:center;padding:24px}
+.wrap{width:min(500px,100%)}
+.card{width:100%;text-align:center;padding:40px 30px 34px;background:var(--g);border:1px solid var(--l);border-radius:28px;backdrop-filter:blur(18px)}
+.radar{position:relative;width:96px;height:96px;margin:0 auto 22px;display:grid;place-items:center;font-size:2.3rem}
+.radar span{position:absolute;inset:0;border-radius:50%;border:2px solid var(--a);opacity:0;animation:wave 2.4s ease-out infinite}
+.radar span:nth-child(2){animation-delay:.8s}.radar span:nth-child(3){animation-delay:1.6s}
+@keyframes wave{from{transform:scale(.4);opacity:.8}to{transform:scale(1.5);opacity:0}}
+.radar.ok span{border-color:var(--ok)}.radar.bad span{border-color:var(--bad);animation-duration:4s}
+h1{font-size:1.8rem;margin:0 0 8px;letter-spacing:-.02em}
+.msg{color:var(--m);margin:0 0 6px}
+.steps{list-style:none;margin:24px 0 8px;padding:0;text-align:left;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:12px 14px;margin-bottom:10px;border-radius:16px;background:var(--g);border:1px solid var(--l);animation:rise .6s both;animation-delay:calc(var(--i)*.12s)}
+.steps li::before{content:counter(s);flex-shrink:0;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;color:#fff;background:linear-gradient(135deg,#3350e6,#7138d8)}
+.steps b{display:block}.steps span{color:var(--m);font-size:.9rem}
+.steps a,.why a{color:var(--a);text-decoration:underline;text-underline-offset:3px}
+.steps li{border-color:var(--m)}
+.why{margin-top:16px;background:var(--g);border:1px solid var(--m);border-radius:20px;backdrop-filter:blur(14px);animation:rise .7s .3s both}
+.why summary{cursor:pointer;padding:15px 20px;font-weight:700;list-style:none}
+.why summary::-webkit-details-marker{display:none}
+.why summary::after{content:"+";float:right;color:var(--a);font-size:1.3rem;line-height:1}
+.why[open] summary::after{content:"–"}
+.why div{padding:0 20px 8px;font-size:.93rem}
+.why p{margin:0 0 12px}
+.why code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;color:var(--a)}
+.ai-row{text-align:center;margin-bottom:16px}
+.sec{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--m);text-align:left;margin:28px 0 0}
+.why section{padding:13px 0;border-top:1px solid var(--l)}
+.why h3{font-size:.95rem;margin:0 0 4px}
+.why section p{margin:0}
+.alt{margin:16px 0 0;font-size:.9rem;color:var(--m)}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<main>
+  <div class="wrap">
+  <div class="ai-row rise"><span class="ai">🤖 Website ist leider AI-generiert · für private Zwecke</span></div>
+  <div class="card glow rise">
+    <div class="radar" id="radar"><span></span><span></span><span></span>🏠</div>
+    <h1 id="title">Einen Moment …</h1>
+    <p class="msg" id="msg">Ich prüfe, ob du im Tailnet bist.</p>
+
+    <div id="offline" hidden>
+      <h2 class="sec">So kommst du rein</h2>
+      <ol class="steps">
+        <li style="--i:1"><div><b>Tailscale installieren</b><span>Die kostenlose App gibt es für Windows, Mac, Linux, iOS und Android: <a href="https://tailscale.com/download" target="_blank" rel="noopener">tailscale.com/download</a></span></div></li>
+        <li style="--i:2"><div><b>Zugang anfragen</b><span>Schick mir eine kurze Mail, dann lade ich dich in mein Netz ein.</span></div></li>
+        <li style="--i:3"><div><b>Verbinden und loslegen</b><span>Tailscale starten, anmelden und hier auf „Erneut prüfen“ klicken.</span></div></li>
+      </ol>
+      <div class="actions">
+        <a class="btn primary" id="mailBtn" href="#">✉️ Zugang anfragen</a>
+        <button class="btn" id="retry" type="button">Erneut prüfen</button>
+      </div>
+      <p class="alt">Du bist sicher verbunden? <a href="https://home.ccr3.de">Direkt zum Portal</a></p>
+      <p class="code">Fehler: TAILNET_NOT_REACHABLE</p>
+    </div>
+  </div>
+
+  <details class="why">
+    <summary>ℹ️ Warum greift diese Seite auf mein Netzwerk zu?</summary>
+    <div>
+      <section>
+        <h3>🔍 Was passiert?</h3>
+        <p>Beim Öffnen schickt dein Browser eine einzelne, kleine Anfrage an <code>home.ccr3.de</code>. Diese Adresse gibt es nur im Tailnet (Tailscale). Kommt eine Antwort, bist du verbunden und wirst weitergeleitet. Sonst zeige ich dir die Anleitung.</p>
+      </section>
+      <section>
+        <h3>🔒 Welche Daten?</h3>
+        <p>Es werden keine Eingaben oder persönlichen Daten gesendet, und die Antwort wird nicht gelesen. Der Server sieht nur die bei jedem Seitenaufruf üblichen Verbindungsdaten, etwa deine IP-Adresse. Die Anfrage geht an genau diese eine Adresse, nicht an andere Geräte in deinem Netzwerk.</p>
+      </section>
+      <section>
+        <h3>🌐 Abfrage deines Browsers</h3>
+        <p>Manche Browser fragen dabei, ob ccr3.de auf dein lokales Netzwerk zugreifen darf. Das gehört zu dieser Prüfung. Lehnst du ab, kann die Seite nicht erkennen, ob du verbunden bist, und zeigt fälschlich die Anleitung. Dann hilft der Link „Direkt zum Portal“.</p>
+      </section>
+    </div>
+  </details>
+  </div>
+</main>
+
+<script>
+/* ============ HIER ANPASSEN ============ */
+const portalUrl   = "https://home.ccr3.de";   // Portal auf server1
+const contactMail = "support.ccr3.de@gmail.com";
+/* ======================================= */
+
+const $ = id => document.getElementById(id);
+$("mailBtn").href = "mailto:" + contactMail + "?subject=" + encodeURIComponent("Zugang zum Tailnet von ccr3.de");
+
+document.addEventListener("pointermove", e => {
+  const c = e.target.closest && e.target.closest(".glow");
+  if (!c) return;
+  const r = c.getBoundingClientRect();
+  c.style.setProperty("--mx", e.clientX - r.left + "px");
+  c.style.setProperty("--my", e.clientY - r.top + "px");
+});
+
+function show(state, title, msg) {
+  $("radar").className = "radar " + state;
+  $("title").textContent = title;
+  $("msg").textContent = msg;
+}
+
+async function check() {
+  $("offline").hidden = true;
+  show("", "Einen Moment …", "Ich prüfe, ob du im Tailnet bist.");
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 4000);
+  try {
+    await fetch(portalUrl, { mode: "no-cors", cache: "no-store", signal: ctrl.signal });
+    show("ok", "Verbunden ✓", "Willkommen zurück! Du wirst weitergeleitet …");
+    setTimeout(() => location.replace(portalUrl), 900);
+  } catch (e) {
+    show("bad", "Noch nicht im Tailnet?", "Die Dienste hinter ccr3.de sind nur über Tailscale erreichbar. So kommst du rein:");
+    $("offline").hidden = false;
+  } finally {
+    clearTimeout(t);
+  }
+}
+$("retry").addEventListener("click", check);
+check();
+</script>
+</body>
+</html>
